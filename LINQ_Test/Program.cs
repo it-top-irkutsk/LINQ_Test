@@ -8,40 +8,55 @@ namespace LINQ_Test
     {
         static void Main()
         {
-            RandomList(out var list, size:10, start:1, end:10);
-            PrintList(list);
-
-            var max = list.Max();
-            var min = list.Min();
-            
-            Console.WriteLine($"min = {min}");
-            Console.WriteLine($"max = {max}");
-
-            var select1 = from item in list 
-                                        where item > 5 
-                                        select item;
-            //var select2 = list.Where(item => item is < 5 and > 1);
-            var select2 = list.Where(item => item < 5 && item > 1).Where(i => i % 2 == 0);
-            PrintList(select1);
-            PrintList(select2);
-            
-        }
-
-        static void RandomList(out List<int> list, in int size, in int start, in int end)
-        {
-            list = new List<int>();
-            var random = new Random();
-            for (int i = 0; i < size; i++)
+            var users = new List<User>
             {
-                list.Add(random.Next(start, end));
-            }
+                new User {Id = 1, Name = "A"},
+                new User {Id = 2, Name = "AA"},
+                new User {Id = 3, Name = "B"},
+                new User {Id = 4, Name = "BB"},
+            };
+            var phones = new List<Phone>
+            {
+                new Phone {Id = 1, UserId = 1, Number = "+7123"},
+                new Phone {Id = 2, UserId = 1, Number = "12"},
+                new Phone {Id = 3, UserId = 2, Number = "123"},
+                new Phone {Id = 4, UserId = 3, Number = "456"},
+                new Phone {Id = 5, UserId = 4, Number = "789"},
+                new Phone {Id = 6, UserId = 1, Number = "0"}
+            };
+            PrintUsers(users);
+            PrintPhones(phones);
+
+            var select = from user in users 
+                from phone in phones 
+                where phone.UserId == user.Id
+                select (user.Name, phone.Number);
+            PrintUserPhones(select);
         }
 
-        static void PrintList(IEnumerable<int> list)
+        static void PrintUsers(IEnumerable<User> users)
+        {
+            foreach (var user in users)
+            {
+                Console.Write($"{{{user.Id}: {user.Name}}}\t");
+            }
+            Console.WriteLine();
+        }
+
+        static void PrintPhones(IEnumerable<Phone> phones)
+        {
+            foreach (var phone in phones)
+            {
+                Console.Write($"{{{phone.Id}: {phone.UserId}, {phone.Number}}}\t");
+            }
+            Console.WriteLine();
+        }
+
+        static void PrintUserPhones(IEnumerable<(string name, string phone)> list)
         {
             foreach (var item in list)
             {
-                Console.Write($"{item}\t");
+                Console.Write($"{{{item.name} - {item.phone}}}\t");
             }
             Console.WriteLine();
         }
