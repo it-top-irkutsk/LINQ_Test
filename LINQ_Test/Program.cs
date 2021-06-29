@@ -27,11 +27,20 @@ namespace LINQ_Test
             PrintUsers(users);
             PrintPhones(phones);
 
-            var select = from user in users 
+            var select = (from user in users 
                 from phone in phones 
                 where phone.UserId == user.Id
-                select (user.Name, phone.Number);
+                select (user.Name, phone.Number)).ToList();
             PrintUserPhones(select);
+
+            var select_join = (from phone in phones
+                join user in users on phone.UserId equals user.Id
+                group user by user.Name into res
+                select (res.Key, res.Count())).ToList();
+            foreach (var item in select_join)
+            {
+                Console.Write($"{item.Key}: {item.Item2}\t");
+            }
         }
 
         static void PrintUsers(IEnumerable<User> users)
